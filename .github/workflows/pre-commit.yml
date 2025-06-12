@@ -1,0 +1,50 @@
+# These github actions will update Terraform section(s) of README(s), and
+# perform linting using pre-commit.
+# yamllint disable rule:line-length
+# spell-checker: disable
+---
+name: pre-commit
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    env:
+      TALISMAN_VERSION: 1.37.1
+      TFDOCS_VERSION: 0.20.0
+      TFLINT_VERSION: 0.58.0
+      TOFU_VERSION: 1.9.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install talisman
+        run: |
+          sudo curl -fsSLo /usr/local/bin/talisman https://github.com/thoughtworks/talisman/releases/download/v${{ env.TALISMAN_VERSION }}/talisman_linux_amd64
+          sudo chmod 0755 /usr/local/bin/talisman
+      - name: Install terraform-docs
+        run: |
+          sudo sh -c 'curl -fsSL https://github.com/terraform-docs/terraform-docs/releases/download/v${{ env.TFDOCS_VERSION }}/terraform-docs-v${{ env.TFDOCS_VERSION }}-linux-amd64.tar.gz | tar xzf - -C /usr/local/bin'
+          sudo chmod 0755 /usr/local/bin/terraform-docs
+      - name: Install tflint
+        run: |
+          curl -fsSLO https://github.com/terraform-linters/tflint/releases/download/v${{ env.TFLINT_VERSION }}/tflint_linux_amd64.zip
+          unzip tflint_linux_amd64.zip && rm tflint_linux_amd64.zip
+          sudo mv tflint /usr/local/bin/tflint
+          sudo chmod 0755 /usr/local/bin/tflint
+      - name: Install opentofu
+        run: |
+          sudo sh -c 'curl -fsSL https://github.com/opentofu/opentofu/releases/download/v${{ env.TOFU_VERSION }}/tofu_${{ env.TOFU_VERSION }}_linux_amd64.tar.gz | tar xzf - -C /usr/local/bin tofu'
+          sudo chmod 0755 /usr/local/bin/tofu
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: pre-commit/action@v3.0.1
