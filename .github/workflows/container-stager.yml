@@ -42,4 +42,4 @@ jobs:
           gcrane auth login "$(echo "${{ vars.OCI_REGISTRY }}" | cut -d/ -f1)" --username oauth2accesstoken --password "${{ steps.auth.outputs.access_token }}"
       - name: Copy containers to private repo
         run: |
-          gcrane cp ghcr.io/memes/terraform-google-private-bastion/forward-proxy:3.1.1 ${{ vars.OCI_REGISTRY }}/memes/terraform-google-private-bastion/forward-proxy:3.1.1
+          gcrane cp ghcr.io/memes/terraform-google-private-bastion/forward-proxy:4.0.0 ${{ vars.OCI_REGISTRY }}/memes/terraform-google-private-bastion/forward-proxy:4.0.0
