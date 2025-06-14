@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # yamllint disable-line rule:line-length
-      DEPLOYMENT_NAME: "projects/${{ vars.PROJECT_ID }}/locations/${{ env.DEPLOYMENT_LOCATION }}/deployments/${{ env.DEPLOYMENT_NAME }}"
+      DEPLOYMENT_NAME: "projects/${{ vars.PROJECT_ID }}/locations/${{ env.DEPLOYMENT_REGION }}/deployments/${{ env.DEPLOYMENT_NAME }}"
       IAC_SERVICE_ACCOUNT_NAME: "projects/${{ vars.PROJECT_ID}/serviceAccounts/${{ secret.IAC_SERVICE_ACCOUNT }}"
       GITHUB_URL: "${{ github.repositoryUrl }}"
       GITHUB_SHA: "${{ github.sha }}"
@@ -61,7 +61,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         env:
           # yamllint disable-line rule:line-length
-          PREVIEW_NAME: "projects/${{ vars.PROJECT_ID }}//locations/${{ env.DEPLOYMENT_LOCATION }}/previews/${GITHUB_SHA}"
+          PREVIEW_NAME: "projects/${{ vars.PROJECT_ID }}//locations/${{ env.DEPLOYMENT_REGION }}/previews/${GITHUB_SHA}"
         run: ./scripts/infra-manager-wrapper.sh plan
       - name: Add plan as comment
         if: ${{ success() && github.event_name == 'pull_request' }}
