@@ -32,8 +32,6 @@ jobs:
   infra-manager:
     runs-on: ubuntu-latest
     env:
-      # yamllint disable-line rule:line-length
-      DEPLOYMENT_NAME: "projects/${{ vars.PROJECT_ID }}/locations/${{ env.DEPLOYMENT_REGION }}/deployments/${{ env.DEPLOYMENT_ID }}"
       IAC_SERVICE_ACCOUNT_NAME: "projects/${{ vars.PROJECT_ID }}/serviceAccounts/${{ secrets.IAC_SERVICE_ACCOUNT }}"
       GITHUB_URL: "${{ github.repositoryUrl }}"
       GITHUB_SHA: "${{ github.sha }}"
@@ -59,9 +57,6 @@ jobs:
           EOF
       - name: Generate preview
         if: ${{ github.event_name == 'pull_request' }}
-        env:
-          # yamllint disable-line rule:line-length
-          PREVIEW_NAME: "projects/${{ vars.PROJECT_ID }}//locations/${{ env.DEPLOYMENT_REGION }}/previews/${{ github.sha }}"
         run: ./scripts/infra-manager-wrapper.sh plan
       - name: Add plan as comment
         if: ${{ success() && github.event_name == 'pull_request' }}
