@@ -52,7 +52,7 @@ jobs:
           project_id = "${{ vars.DEPLOYMENT_PROJECT_ID }}"
           name       = "${{ env.DEPLOYMENT_ID }}"
           region     = "${{ env.DEPLOYMENT_REGION }}"
-          labels.    = ${{ env.DEPLOYMENT_LABELS }}
+          labels     = ${{ env.DEPLOYMENT_LABELS }}
           registry   = "${{ vars.OCI_REGISTRY }}"
           EOF
       - name: Generate preview
