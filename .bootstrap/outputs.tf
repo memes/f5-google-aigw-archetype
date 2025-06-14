@@ -5,3 +5,7 @@ output "iac_sa" {
 output "repo_url" {
   value = module.bootstrap.html_url
 }
+
+output "ar" {
+  value = module.bootstrap.repo_identifiers["oci"]
+}

@@ -30,7 +30,7 @@ variable "github_options" {
   nullable = false
   default = {
     private_repo = false
-    name         = ""
+    name         = "f5-google-aigw-archetype"
     description  = "A set of archetypes for deploying F5 AI Gateway on Google Cloud"
     template     = ""
   }

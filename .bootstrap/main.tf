@@ -64,7 +64,13 @@ module "bootstrap" {
     "roles/compute.networkAdmin",
     "roles/compute.securityAdmin",
     "roles/config.agent",
+    "roles/container.admin",
     "roles/dns.admin",
+    "roles/iam.securityAdmin",
+    "roles/iam.serviceAccountAdmin",
+    "roles/iam.serviceAccountUser",
+    "roles/iam.serviceAccountTokenCreator",
+    "roles/iap.admin",
     "roles/logging.logWriter",
   ]
   # spell-checker: enable
