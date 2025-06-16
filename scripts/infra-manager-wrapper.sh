@@ -4,6 +4,16 @@
 
 set -ex
 
+DEPLOYMENT_ID=emes-im-tst
+DEPLOYMENT_PROJECT_ID=f5-gcs-4138-sales-cloudnext25
+DEPLOYMENT_REGION=us-west1
+TF_VERSION="1.5.7"
+IAC_SERVICE_ACCOUNT_NAME="projects/f5-gcs-4138-sales-cloudnext25/serviceAccounts/emes-aigw-iac@f5-gcs-4138-sales-cloudnext25.iam.gserviceaccount.com"
+GITHUB_URL=https://github.com/memes/f5-google-aigw-archetype
+GITHUB_SHA=38fc2b029fda95f27f9a05fb307a58aede756559
+GITHUB_REF="feat%2finfra_manager"
+SOURCE_DIRECTORY=foundations
+
 plan()
 {
     [ -z "${DEPLOYMENT_ID}" ] && echo "ERROR: DEPLOYMENT_ID environment variable must be set" && exit 1
@@ -25,15 +35,15 @@ plan()
 
     # Create a new preview for the commit
     gcloud infra-manager previews create "${PREVIEW_NAME}" \
-        --service-account "${IAC_SERVICE_ACCOUNT_NAME}" \
-        --git-source-repo "${GITHUB_URL}" \
-        --git-source-ref "${GITHUB_REF}" \
-        --git-source-directory "${SOURCE_DIRECTORY}" \
-        --inputs-file "${GITHUB_SHA}.tfvars" \
-        ${HAS_EXISTING_DEPLOYMENT:+--deployment "${DEPLOYMENT_NAME}"}
+        --service-account="${IAC_SERVICE_ACCOUNT_NAME}" \
+        --git-source-repo="${GITHUB_URL}" \
+        --git-source-ref="${GITHUB_REF}" \
+        --git-source-directory="${SOURCE_DIRECTORY}" \
+        --inputs-file="${GITHUB_SHA}.tfvars" \
+        ${HAS_EXISTING_DEPLOYMENT:+--deployment="${DEPLOYMENT_NAME}"}
 
     # Export the tfplan from preview
-    gcloud infra-manager previews export "${PREVIEW_NAME}" --file "${GITHUB_SHA}"
+    gcloud infra-manager previews export "${PREVIEW_NAME}" --file="${GITHUB_SHA}"
 
     # Transform tfplan to readable text
     terraform -chdir="${SOURCE_DIRECTORY}" init
@@ -54,12 +64,12 @@ apply()
 
     DEPLOYMENT_NAME="projects/${DEPLOYMENT_PROJECT_ID}/locations/${DEPLOYMENT_REGION}/deployments/${DEPLOYMENT_ID}"
     gcloud infra-manager deployments apply "${DEPLOYMENT_NAME}" \
-        --service-account "${IAC_SERVICE_ACCOUNT_NAME}" \
-        --git-source-repo "${GITHUB_URL}" \
-        --git-source-ref "${GITHUB_REF}" \
-        --git-source-directory "${SOURCE_DIRECTORY}" \
-        --tf-version-constraint "${TF_VERSION}" \
-        --inputs-file "${GITHUB_SHA}.tfvars"
+        --service-account="${IAC_SERVICE_ACCOUNT_NAME}" \
+        --git-source-repo="${GITHUB_URL}" \
+        --git-source-ref="${GITHUB_REF}" \
+        --git-source-directory="${SOURCE_DIRECTORY}" \
+        --tf-version-constraint="${TF_VERSION}" \
+        --inputs-file="${GITHUB_SHA}.tfvars"
 }
 
 delete()

@@ -35,7 +35,7 @@ jobs:
       IAC_SERVICE_ACCOUNT_NAME: "projects/${{ vars.PROJECT_ID }}/serviceAccounts/${{ secrets.IAC_SERVICE_ACCOUNT }}"
       GITHUB_URL: "${{ github.server_url }}/${{ github.repository }}"
       GITHUB_SHA: "${{ github.sha }}"
-      GITHUB_REF: "${{ github.ref }}"
+      GITHUB_REF: "${{ github.head_ref || github.ref_name }}"
       SOURCE_DIRECTORY: foundations
     steps:
       - uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
           name       = "${{ env.DEPLOYMENT_ID }}"
           region     = "${{ env.DEPLOYMENT_REGION }}"
           labels     = ${{ env.DEPLOYMENT_LABELS }}
-          registry   = "${{ vars.OCI_REGISTRY }}"
+          repository = "${{ vars.OCI_REGISTRY }}"
           EOF
       - name: Generate preview
         if: ${{ github.event_name == 'pull_request' }}
