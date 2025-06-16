@@ -50,7 +50,7 @@ jobs:
       - name: Create local terraform variables file
         run: |
           cat <<'EOF' > ${{ github.sha }}.tfvars
-          project_id = "${{ vars.DEPLOYMENT_PROJECT_ID }}"
+          project_id = "${{ env.DEPLOYMENT_PROJECT_ID }}"
           name       = "${{ env.DEPLOYMENT_ID }}"
           region     = "${{ env.DEPLOYMENT_REGION }}"
           labels     = ${{ env.DEPLOYMENT_LABELS }}

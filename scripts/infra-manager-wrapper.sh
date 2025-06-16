@@ -2,7 +2,7 @@
 #
 # Script to invoke Infrastructure Manager via gcloud CLI
 
-set -e
+set -ex
 
 plan()
 {
