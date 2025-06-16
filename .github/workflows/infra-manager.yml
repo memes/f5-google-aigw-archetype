@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IAC_SERVICE_ACCOUNT_NAME: "projects/${{ vars.PROJECT_ID }}/serviceAccounts/${{ secrets.IAC_SERVICE_ACCOUNT }}"
-      GITHUB_URL: "${{ github.repositoryUrl }}"
+      GITHUB_URL: "${{ github.server_url }}/${{ github.repository }}"
       GITHUB_SHA: "${{ github.sha }}"
       SOURCE_DIRECTORY: foundations
     steps:
