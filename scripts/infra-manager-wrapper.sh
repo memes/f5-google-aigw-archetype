@@ -12,6 +12,7 @@ plan()
     [ -z "${IAC_SERVICE_ACCOUNT_NAME}" ] && echo "ERROR: IAC_SERVICE_ACCOUNT_NAME environment variable must be set" && exit 1
     [ -z "${GITHUB_URL}" ] && echo "ERROR: GITHUB_URL environment variable must be set" && exit 1
     [ -z "${GITHUB_SHA}" ] && echo "ERROR: GITHUB_SHA environment variable must be set" && exit 1
+    [ -z "${GITHUB_REF}" ] && echo "ERROR: GITHUB_REF environment variable must be set" && exit 1
     [ -z "${SOURCE_DIRECTORY}" ] && echo "ERROR: SOURCE_DIRECTORY environment variable must be set" && exit 1
 
     # Delete existing preview, if it exists
@@ -26,7 +27,7 @@ plan()
     gcloud infra-manager previews create "${PREVIEW_NAME}" \
         --service-account "${IAC_SERVICE_ACCOUNT_NAME}" \
         --git-source-repo "${GITHUB_URL}" \
-        --git-source-ref "${GITHUB_SHA}" \
+        --git-source-ref "${GITHUB_REF}" \
         --git-source-directory "${SOURCE_DIRECTORY}" \
         --inputs-file "${GITHUB_SHA}.tfvars" \
         ${HAS_EXISTING_DEPLOYMENT:+--deployment "${DEPLOYMENT_NAME}"}
@@ -47,6 +48,7 @@ apply()
     [ -z "${IAC_SERVICE_ACCOUNT_NAME}" ] && echo "ERROR: IAC_SERVICE_ACCOUNT_NAME environment variable must be set" && exit 1
     [ -z "${GITHUB_URL}" ] && echo "ERROR: GITHUB_URL environment variable must be set" && exit 1
     [ -z "${GITHUB_SHA}" ] && echo "ERROR: GITHUB_SHA environment variable must be set" && exit 1
+    [ -z "${GITHUB_REF}" ] && echo "ERROR: GITHUB_REF environment variable must be set" && exit 1
     [ -z "${SOURCE_DIRECTORY}" ] && echo "ERROR: SOURCE_DIRECTORY environment variable must be set" && exit 1
     [ -z "${TF_VERSION}" ] && echo "ERROR: TF_VERSION environment variable must be set" && exit 1
 
@@ -54,7 +56,7 @@ apply()
     gcloud infra-manager deployments apply "${DEPLOYMENT_NAME}" \
         --service-account "${IAC_SERVICE_ACCOUNT_NAME}" \
         --git-source-repo "${GITHUB_URL}" \
-        --git-source-ref "${GITHUB_SHA}" \
+        --git-source-ref "${GITHUB_REF}" \
         --git-source-directory "${SOURCE_DIRECTORY}" \
         --tf-version-constraint "${TF_VERSION}" \
         --inputs-file "${GITHUB_SHA}.tfvars"

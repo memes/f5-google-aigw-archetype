@@ -35,6 +35,7 @@ jobs:
       IAC_SERVICE_ACCOUNT_NAME: "projects/${{ vars.PROJECT_ID }}/serviceAccounts/${{ secrets.IAC_SERVICE_ACCOUNT }}"
       GITHUB_URL: "${{ github.server_url }}/${{ github.repository }}"
       GITHUB_SHA: "${{ github.sha }}"
+      GITHUB_REF: "${{ github.ref }}"
       SOURCE_DIRECTORY: foundations
     steps:
       - uses: actions/checkout@v4
