@@ -4,16 +4,6 @@
 
 set -ex
 
-DEPLOYMENT_ID=emes-im-tst
-DEPLOYMENT_PROJECT_ID=f5-gcs-4138-sales-cloudnext25
-DEPLOYMENT_REGION=us-west1
-TF_VERSION="1.5.7"
-IAC_SERVICE_ACCOUNT_NAME="projects/f5-gcs-4138-sales-cloudnext25/serviceAccounts/emes-aigw-iac@f5-gcs-4138-sales-cloudnext25.iam.gserviceaccount.com"
-GITHUB_URL=https://github.com/memes/f5-google-aigw-archetype
-GITHUB_SHA=38fc2b029fda95f27f9a05fb307a58aede756559
-GITHUB_REF="feat%2finfra_manager"
-SOURCE_DIRECTORY=foundations
-
 plan()
 {
     [ -z "${DEPLOYMENT_ID}" ] && echo "ERROR: DEPLOYMENT_ID environment variable must be set" && exit 1
