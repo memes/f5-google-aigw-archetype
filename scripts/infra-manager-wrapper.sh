@@ -30,8 +30,6 @@ build_args()
         args="${args:+"${args} "}--annotations='${DEPLOYMENT_ANNOTATIONS}'"
     [ -n "${DEPLOYMENT_INPUTS_FILE}" ] && [ -r "${DEPLOYMENT_INPUTS_FILE}" ] && \
         args="${args:+"${args} "}--inputs-file='${DEPLOYMENT_INPUTS_FILE}'"
-    [ -n "${DEPLOYMENT_TF_VERSION}" ] && \
-        args="${args:+"${args} "}--tf-version-constraint='${DEPLOYMENT_TF_VERSION}'"
     echo "${args}"
 }
 
@@ -100,6 +98,8 @@ plan()
 apply()
 {
     args="$(build_args "deployments apply '$(deployment_name)'")"
+    [ -n "${DEPLOYMENT_TF_VERSION}" ] && \
+        args="${args:+"${args} "}--tf-version-constraint='${DEPLOYMENT_TF_VERSION}'"
     eval "gcloud infra-manager ${args}"
 }
 
