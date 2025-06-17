@@ -38,11 +38,11 @@
         }
     },
     "onCreateCommand": {
-        "install-pre-commit": "sudo sh -c 'apt update && apt install -y --no-install-recommends pipx && rm -rf /var/lib/apt/lists/*' && pipx install pre-commit",
-        "modify-default-omz-plugins": ["/usr/bin/sed", "-i.onCreateCommand" , "-e", "/^plugins=/c\\plugins=(git dotenv)", "/home/vscode/.zshrc"]
+        "install-packages": "sudo sh -c 'apt update&& apt install -y --no-install-recommends pipx shellcheck && rm -rf /var/lib/apt/lists/*'",
+        "modify-default-omz-plugins": ["/usr/bin/sed", "-i.onCreateCommand"  , "-e", "/^plugins=/c\\plugins=(git dotenv)", "/home/vscode/.zshrc"]
     },
     "postCreateCommand": {
-        "pre-commit-hook": "pre-commit install --hook-type commit-msg --hook-type pre-commit"
+        "pre-commit-hook": "pipx install pre-commit && pre-commit install --hook-type commit-msg --hook-type pre-commit"
     },
     "containerUser": "vscode",
     "updateRemoteUserUID": true,
