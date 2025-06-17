@@ -71,7 +71,7 @@ jobs:
         if: ${{ success() && github.event_name == 'pull_request' }}
         run: |
           curl -fsSLO https://github.com/Azure/tfplandoc/releases/download/v${{ env.TFPLANDOC_VERSION }}/tfplandoc_${{ env.TFPLANDOC_VERSION }}_linux_amd64.zip
-          unzip tfplandoc_${{ env.TFPLANDOC_VERSION }}_linux_amd64.zip
+          unzip -n tfplandoc_${{ env.TFPLANDOC_VERSION }}_linux_amd64.zip
           ./tfplandoc_${{ env.TFPLANDOC_VERSION }} generate "${{ github.sha }}.json" > "${{ github.sha }}.md"
       - name: Add markdown output as comment
         if: ${{ success() && github.event_name == 'pull_request' }}
