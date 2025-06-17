@@ -4,71 +4,111 @@
 
 set -ex
 
+# Build arguments common to plan and apply functions. Will report an error if required environment variables are not
+# provided.
+build_args()
+{
+    args="$1"
+    # Verify the required arguments first to fail early
+    [ -z "${DEPLOYMENT_SERVICE_ACCOUNT_NAME}" ] && \
+        echo "ERROR: DEPLOYMENT_SERVICE_ACCOUNT_NAME environment variable must be set" && \
+        exit 1
+    args="${args:+"${args} "}--service-account='${DEPLOYMENT_SERVICE_ACCOUNT_NAME}'"
+    [ -z "${DEPLOYMENT_GIT_URL}" ] && \
+        echo "ERROR: DEPLOYMENT_GIT_URL environment variable must be set" && \
+        exit 1
+    args="${args:+"${args} "}--git-source-repo='${DEPLOYMENT_GIT_URL}'"
+
+    # Optional arguments
+    [ -n "${DEPLOYMENT_GIT_REF}" ] && \
+        args="${args:+"${args} "}--git-source-ref='${DEPLOYMENT_GIT_REF}'"
+    [ -n "${DEPLOYMENT_GIT_SOURCE_DIRECTORY}" ] && \
+        args="${args:+"${args} "}--git-source-directory='${DEPLOYMENT_GIT_SOURCE_DIRECTORY}'"
+    [ -n "${DEPLOYMENT_LABELS}" ] && \
+        args="${args:+"${args} "}--labels='${DEPLOYMENT_LABELS}'"
+    [ -n "${DEPLOYMENT_ANNOTATIONS}" ] && \
+        args="${args:+"${args} "}--annotations='${DEPLOYMENT_ANNOTATIONS}'"
+    [ -n "${DEPLOYMENT_INPUTS_FILE}" ] && [ -r "${DEPLOYMENT_INPUTS_FILE}" ] && \
+        args="${args:+"${args} "}--inputs-file='${DEPLOYMENT_INPUTS_FILE}'"
+    [ -n "${DEPLOYMENT_TF_VERSION}" ] && \
+        args="${args:+"${args} "}--tf-version-constraint='${DEPLOYMENT_TF_VERSION}'"
+    echo "${args}"
+}
+
+# Generates the fully-qualified Infrastructure Manager name for this preview
+preview_name()
+{
+    [ -z "${DEPLOYMENT_PROJECT_ID}" ] && \
+        echo "ERROR: DEPLOYMENT_PROJECT_ID environment variable must be set" && \
+        exit 1
+    [ -z "${DEPLOYMENT_REGION}" ] && \
+        echo "ERROR: DEPLOYMENT_REGION environment variable must be set" && \
+        exit 1
+    [ -z "${DEPLOYMENT_GIT_SHA}" ] && \
+        echo "ERROR: DEPLOYMENT_GIT_SHA environment variable must be set" && \
+        exit 1
+    echo "projects/${DEPLOYMENT_PROJECT_ID}/locations/${DEPLOYMENT_REGION}/previews/${DEPLOYMENT_GIT_SHA}"
+}
+
+# Generates the fully-qualified Infrastructure Manager name for this deployment
+deployment_name()
+{
+    [ -z "${DEPLOYMENT_PROJECT_ID}" ] && \
+        echo "ERROR: DEPLOYMENT_PROJECT_ID environment variable must be set" && \
+        exit 1
+    [ -z "${DEPLOYMENT_REGION}" ] && \
+        echo "ERROR: DEPLOYMENT_REGION environment variable must be set" && \
+        exit 1
+    [ -z "${DEPLOYMENT_ID}" ] && \
+        echo "ERROR: DEPLOYMENT_ID environment variable must be set" && \
+        exit 1
+    echo "projects/${DEPLOYMENT_PROJECT_ID}/locations/${DEPLOYMENT_REGION}/deployments/${DEPLOYMENT_ID}"
+}
+
 plan()
 {
-    [ -z "${DEPLOYMENT_ID}" ] && echo "ERROR: DEPLOYMENT_ID environment variable must be set" && exit 1
-    [ -z "${DEPLOYMENT_PROJECT_ID}" ] && echo "ERROR: DEPLOYMENT_PROJECT_ID environment variable must be set" && exit 1
-    [ -z "${DEPLOYMENT_REGION}" ] && echo "ERROR: DEPLOYMENT_REGION environment variable must be set" && exit 1
-    [ -z "${IAC_SERVICE_ACCOUNT_NAME}" ] && echo "ERROR: IAC_SERVICE_ACCOUNT_NAME environment variable must be set" && exit 1
-    [ -z "${GITHUB_URL}" ] && echo "ERROR: GITHUB_URL environment variable must be set" && exit 1
-    [ -z "${GITHUB_SHA}" ] && echo "ERROR: GITHUB_SHA environment variable must be set" && exit 1
-    [ -z "${GITHUB_REF}" ] && echo "ERROR: GITHUB_REF environment variable must be set" && exit 1
-    [ -z "${SOURCE_DIRECTORY}" ] && echo "ERROR: SOURCE_DIRECTORY environment variable must be set" && exit 1
+    # Preview requires a unique sha to use
 
-    # Delete existing preview, if it exists
-    PREVIEW_NAME="projects/${DEPLOYMENT_PROJECT_ID}/locations/${DEPLOYMENT_REGION}/previews/${GITHUB_SHA}"
-    gcloud infra-manager previews delete --quiet "${PREVIEW_NAME}" 2>/dev/null || true
 
-    # See if there is an existing deployment to attach to the preview
-    DEPLOYMENT_NAME="projects/${DEPLOYMENT_PROJECT_ID}/locations/${DEPLOYMENT_REGION}/deployments/${DEPLOYMENT_ID}"
-    HAS_EXISTING_DEPLOYMENT="$(gcloud infra-manager deployments describe "${DEPLOYMENT_NAME}" --format "value(name)" 2>/dev/null || true)"
+    # Delete existing preview for this commit, if it exists
+    preview_name="$(preview_name)"
+    gcloud infra-manager previews delete --quiet "${preview_name}" 2>/dev/null || true
 
-    # Create a new preview for the commit
-    gcloud infra-manager previews create "${PREVIEW_NAME}" \
-        --service-account="${IAC_SERVICE_ACCOUNT_NAME}" \
-        --git-source-repo="${GITHUB_URL}" \
-        --git-source-ref="${GITHUB_REF}" \
-        --git-source-directory="${SOURCE_DIRECTORY}" \
-        --inputs-file="${GITHUB_SHA}.tfvars" \
-        ${HAS_EXISTING_DEPLOYMENT:+--deployment="${DEPLOYMENT_NAME}"}
+    args="$(build_args "previews create '${preview_name}'")"
+
+    # See if there is an existing deployment to attach to the preview arguments
+    deployment_name="$(deployment_name)"
+    [ -n "$(gcloud infra-manager deployments describe "${deployment_name}" --format "value(name)" 2>/dev/null || true)" ] && \
+        args="${args:+"${args} "}--deployment='{deployment_name}'}"
+
+    eval "gcloud infra-manager ${args}"
 
     # Export the tfplan from preview
-    gcloud infra-manager previews export "${PREVIEW_NAME}" --file="${GITHUB_SHA}"
+    [ -z "${DEPLOYMENT_GIT_SHA}" ] && \
+        echo "ERROR: DEPLOYMENT_GIT_SHA environment variable must be set" && \
+        exit 1
+    gcloud infra-manager previews export "${preview_name}" --file="${DEPLOYMENT_GIT_SHA}"
 
     # Transform tfplan to readable text
-    terraform -chdir="${SOURCE_DIRECTORY}" init
-    terraform -chdir="${SOURCE_DIRECTORY}" show -no-color "$(readlink -f "${GITHUB_SHA}.tfplan")" > "${GITHUB_SHA}.txt"
+    tf_chdir=""
+    [ -n "${DEPLOYMENT_SOURCE_DIRECTORY}" ] && [ -d "${DEPLOYMENT_SOURCE_DIRECTORY}" ] && \
+        tf_chdir="-chdir='${DEPLOYMENT_SOURCE_DIRECTORY}'"
+    eval "terraform ${tf_chdir} init"
+    eval "terraform ${tf_chdir} show -no-color $(readlink -f "${DEPLOYMENT_GIT_SHA}.tfplan")" > "${DEPLOYMENT_GIT_SHA}.txt"
 }
 
 apply()
 {
-    [ -z "${DEPLOYMENT_ID}" ] && echo "ERROR: DEPLOYMENT_ID environment variable must be set" && exit 1
-    [ -z "${DEPLOYMENT_PROJECT_ID}" ] && echo "ERROR: DEPLOYMENT_PROJECT_ID environment variable must be set" && exit 1
-    [ -z "${DEPLOYMENT_REGION}" ] && echo "ERROR: DEPLOYMENT_REGION environment variable must be set" && exit 1
-    [ -z "${IAC_SERVICE_ACCOUNT_NAME}" ] && echo "ERROR: IAC_SERVICE_ACCOUNT_NAME environment variable must be set" && exit 1
-    [ -z "${GITHUB_URL}" ] && echo "ERROR: GITHUB_URL environment variable must be set" && exit 1
-    [ -z "${GITHUB_SHA}" ] && echo "ERROR: GITHUB_SHA environment variable must be set" && exit 1
-    [ -z "${GITHUB_REF}" ] && echo "ERROR: GITHUB_REF environment variable must be set" && exit 1
-    [ -z "${SOURCE_DIRECTORY}" ] && echo "ERROR: SOURCE_DIRECTORY environment variable must be set" && exit 1
-    [ -z "${TF_VERSION}" ] && echo "ERROR: TF_VERSION environment variable must be set" && exit 1
-
-    DEPLOYMENT_NAME="projects/${DEPLOYMENT_PROJECT_ID}/locations/${DEPLOYMENT_REGION}/deployments/${DEPLOYMENT_ID}"
-    gcloud infra-manager deployments apply "${DEPLOYMENT_NAME}" \
-        --service-account="${IAC_SERVICE_ACCOUNT_NAME}" \
-        --git-source-repo="${GITHUB_URL}" \
-        --git-source-ref="${GITHUB_REF}" \
-        --git-source-directory="${SOURCE_DIRECTORY}" \
-        --tf-version-constraint="${TF_VERSION}" \
-        --inputs-file="${GITHUB_SHA}.tfvars"
+    args="$(build_args "deployments apply '$(deployment_name)'")"
+    eval "gcloud infra-manager ${args}"
 }
 
 delete()
 {
-    [ -z "${DEPLOYMENT_ID}" ] && echo "ERROR: DEPLOYMENT_ID environment variable must be set" && exit 1
-    [ -z "${DEPLOYMENT_PROJECT_ID}" ] && echo "ERROR: DEPLOYMENT_PROJECT_ID environment variable must be set" && exit 1
-    [ -z "${DEPLOYMENT_REGION}" ] && echo "ERROR: DEPLOYMENT_REGION environment variable must be set" && exit 1
-    gcloud infra-manager deployments delete "projects/${DEPLOYMENT_PROJECT_ID}/locations/${DEPLOYMENT_REGION}/deployments/${DEPLOYMENT_ID}"
+    gcloud infra-manager deployments delete "$(deployment_name)"
 }
+
+printenv
 
 case "$1" in
     apply)
