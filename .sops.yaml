@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: secrets\.yaml$
+    gcp_kms: 'projects/f5-gcs-4138-sales-cloudnext25/locations/us/keyRings/emes-aigw-automation/cryptoKeys/emes-aigw-sops'

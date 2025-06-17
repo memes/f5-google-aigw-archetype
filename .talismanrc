@@ -1,0 +1,8 @@
+# spell-checker: disable
+---
+version: "1.0"
+fileignoreconfig:
+- filename: foundations/variables.tf
+  checksum: 2f71599b845423d9000256e43f589ca9cc9d0c644078fed49512bd1907f1f7c1
+- filename: scripts/infra-manager-wrapper.sh
+  checksum: 4523de56b232fbc288580cfbbf36bae18a09d3ca8bfc36df1e321def3d76c5ae

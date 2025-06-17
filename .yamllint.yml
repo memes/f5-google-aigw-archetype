@@ -4,5 +4,11 @@ ignore: |
   apps/bases/**/*.yaml
 
 rules:
+  document-start:
+    ignore: |
+      .sops.yaml
   line-length:
     max: 120
+    ignore: |
+      .sops.yaml
+      .github/workflows/infra-manager.yml
