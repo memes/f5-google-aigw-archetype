@@ -20,6 +20,7 @@ permissions:
   pull-requests: read
 
 env:
+  TFPLANDOC_VERSION: 0.4.1
   # These values define the properties used by Infrastructure Manager
   DEPLOYMENT_ID: emes-im-tst
   DEPLOYMENT_PROJECT_ID: ${{ vars.PROJECT_ID }}
@@ -39,6 +40,12 @@ jobs:
       DEPLOYMENT_INPUTS_FILE: "${{ github.sha }}.tfvars"
     steps:
       - uses: actions/checkout@v4
+      - name: Install tfplandoc
+        run: |
+          curl -fsSLO https://github.com/Azure/tfplandoc/releases/download/v${{ env.TFPLANDOC_VERSION }}/tfplandoc_${{ env.TFPLANDOC_VERSION }}_linux_amd64.zip
+          unzip tfplandoc_${{ env.TFPLANDOC_VERSION }}_linux_amd64.zip && rm -f tfplandoc_${{ env.TFPLANDOC_VERSION }}_linux_amd64.zip
+          sudo mv tfplandoc_${{ env.TFPLANDOC_VERSION }}_linux /usr/local/bin/tfplandoc
+          sudo chown 0755 /usr/local/bin/tfplandoc
       - uses: google-github-actions/auth@v2
         with:
           project_id: ${{ vars.PROJECT_ID }}
@@ -63,20 +70,24 @@ jobs:
             product = "f5-aigw"
           }
           EOF
-      - name: Generate preview
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Generate preview plan
+        if: ${{ success() && github.event_name == 'pull_request' }}
         run: ./scripts/infra-manager-wrapper.sh plan
-      - name: Add plan as comment
+      - name: Generate markdown summary of plan
+        if: ${{ success() && github.event_name == 'pull_request' }}
+        run: |
+          tfplandoc generate "${{ github.sha }}.json" > "${{ github.sha }}.md"
+      - name: Add markdown output as comment
         if: ${{ success() && github.event_name == 'pull_request' }}
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const plan = fs.readFileSync("${{ github.sha }}.txt");
+            const plan = fs.readFileSync("${{ github.sha }}.md");
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
-              repo: content.repo.repo,
+              repo: context.repo.repo,
               body: plan
             })
       - name: Apply changes

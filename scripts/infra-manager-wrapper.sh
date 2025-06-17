@@ -86,13 +86,6 @@ plan()
         echo "ERROR: DEPLOYMENT_GIT_SHA environment variable must be set" && \
         exit 1
     gcloud infra-manager previews export "${preview_name}" --file="${DEPLOYMENT_GIT_SHA}"
-
-    # Transform tfplan to readable text
-    tf_chdir=""
-    [ -n "${DEPLOYMENT_GIT_SOURCE_DIRECTORY}" ] && [ -d "${DEPLOYMENT_GIT_SOURCE_DIRECTORY}" ] && \
-        tf_chdir="-chdir='${DEPLOYMENT_GIT_SOURCE_DIRECTORY}'"
-    eval "terraform ${tf_chdir} init"
-    eval "terraform ${tf_chdir} show -no-color $(readlink -f "${DEPLOYMENT_GIT_SHA}.tfplan")" > "${DEPLOYMENT_GIT_SHA}.txt"
 }
 
 apply()

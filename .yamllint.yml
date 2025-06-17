@@ -11,3 +11,4 @@ rules:
     max: 120
     ignore: |
       .sops.yaml
+      .github/workflows/infra-manager.yml
