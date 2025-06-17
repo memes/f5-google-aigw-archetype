@@ -6,11 +6,13 @@ on:
   pull_request:
     paths:
       - 'foundations/**'
+      - scripts/infra-manager-wrapper.sh
   push:
     branches:
       - main
     paths:
       - 'foundations/**'
+      - scripts/infra-manager-wrapper.sh
 
 permissions:
   contents: read
