@@ -2,7 +2,7 @@
 #
 # Script to invoke Infrastructure Manager via gcloud CLI
 
-set -ex
+set -e
 
 # Build arguments common to plan and apply functions. Will report an error if required environment variables are not
 # provided.
@@ -89,8 +89,8 @@ plan()
 
     # Transform tfplan to readable text
     tf_chdir=""
-    [ -n "${DEPLOYMENT_SOURCE_DIRECTORY}" ] && [ -d "${DEPLOYMENT_SOURCE_DIRECTORY}" ] && \
-        tf_chdir="-chdir='${DEPLOYMENT_SOURCE_DIRECTORY}'"
+    [ -n "${DEPLOYMENT_GIT_SOURCE_DIRECTORY}" ] && [ -d "${DEPLOYMENT_GIT_SOURCE_DIRECTORY}" ] && \
+        tf_chdir="-chdir='${DEPLOYMENT_GIT_SOURCE_DIRECTORY}'"
     eval "terraform ${tf_chdir} init"
     eval "terraform ${tf_chdir} show -no-color $(readlink -f "${DEPLOYMENT_GIT_SHA}.tfplan")" > "${DEPLOYMENT_GIT_SHA}.txt"
 }
@@ -107,8 +107,6 @@ delete()
 {
     gcloud infra-manager deployments delete "$(deployment_name)"
 }
-
-printenv
 
 case "$1" in
     apply)
