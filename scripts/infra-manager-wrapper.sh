@@ -21,7 +21,7 @@ build_args()
 
     # Optional arguments
     [ -n "${DEPLOYMENT_GIT_REF}" ] && \
-        args="${args:+"${args} "}--git-source-ref='${DEPLOYMENT_GIT_REF}'"
+        args="${args:+"${args} "}--git-source-ref='$(python3 -c "import urllib.parse; print(urllib.parse.quote_plus('${DEPLOYMENT_GIT_REF}'))")'"
     [ -n "${DEPLOYMENT_GIT_SOURCE_DIRECTORY}" ] && \
         args="${args:+"${args} "}--git-source-directory='${DEPLOYMENT_GIT_SOURCE_DIRECTORY}'"
     [ -n "${DEPLOYMENT_LABELS}" ] && \
