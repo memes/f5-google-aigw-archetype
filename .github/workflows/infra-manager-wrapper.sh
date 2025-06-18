@@ -77,7 +77,7 @@ plan()
     # See if there is an existing deployment to attach to the preview arguments
     deployment_name="$(deployment_name)"
     [ -n "$(gcloud infra-manager deployments describe "${deployment_name}" --format "value(name)" 2>/dev/null || true)" ] && \
-        args="${args:+"${args} "}--deployment='{deployment_name}'}"
+        args="${args:+"${args} "}--deployment='${deployment_name}'"
 
     eval "gcloud infra-manager ${args}"
 
