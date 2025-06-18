@@ -56,7 +56,7 @@ jobs:
           project_id                   = "${{ env.DEPLOYMENT_PROJECT_ID }}"
           name                         = "${{ env.DEPLOYMENT_ID }}"
           region                       = "${{ env.DEPLOYMENT_REGION }}"
-          repository.                  = "${{ vars.OCI_REGISTRY }}"
+          repository                   = "${{ vars.OCI_REGISTRY }}"
           cloud_deploy_service_account = "${{ secrets.DEPLOY_SERVICE_ACCOUNT }}"
           labels                       = {
             owner   = "emes"
