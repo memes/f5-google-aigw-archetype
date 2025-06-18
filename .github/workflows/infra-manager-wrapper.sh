@@ -65,9 +65,6 @@ deployment_name()
 
 plan()
 {
-    # Preview requires a unique sha to use
-
-
     # Delete existing preview for this commit, if it exists
     preview_name="$(preview_name)"
     gcloud infra-manager previews delete --quiet "${preview_name}" 2>/dev/null || true
