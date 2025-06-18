@@ -9,3 +9,7 @@ output "repo_url" {
 output "ar" {
   value = module.bootstrap.repo_identifiers["oci"]
 }
+
+output "deploy_sa" {
+  value = module.bootstrap.deploy_sa
+}

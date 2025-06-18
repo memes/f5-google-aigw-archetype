@@ -24,7 +24,6 @@ variable "name" {
   EOD
 }
 
-
 variable "region" {
   type     = string
   nullable = false
@@ -64,5 +63,18 @@ variable "repository" {
   }
   description = <<-EOD
   The private Artifact Registry that will be used for deployments.
+  EOD
+}
+
+variable "cloud_deploy_service_account" {
+  type     = string
+  nullable = true
+  validation {
+    condition     = can(regex("(?:[a-z][a-z0-9-]{4,28}[a-z0-9]@[a-z][a-z0-9-]{4,28}\\.iam|[1-9][0-9]+-compute@developer)\\.gserviceaccount\\.com$", var.cloud_deploy_service_account))
+    error_message = "The cloud_deploy_service_account variable must be a valid GCP service account email address."
+  }
+  default     = null
+  description = <<-EOD
+  Optional Cloud Deploy execution service account that will deploy resources to GKE.
   EOD
 }

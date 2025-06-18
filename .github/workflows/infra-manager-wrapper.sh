@@ -65,9 +65,6 @@ deployment_name()
 
 plan()
 {
-    # Preview requires a unique sha to use
-
-
     # Delete existing preview for this commit, if it exists
     preview_name="$(preview_name)"
     gcloud infra-manager previews delete --quiet "${preview_name}" 2>/dev/null || true
@@ -77,7 +74,7 @@ plan()
     # See if there is an existing deployment to attach to the preview arguments
     deployment_name="$(deployment_name)"
     [ -n "$(gcloud infra-manager deployments describe "${deployment_name}" --format "value(name)" 2>/dev/null || true)" ] && \
-        args="${args:+"${args} "}--deployment='{deployment_name}'}"
+        args="${args:+"${args} "}--deployment='${deployment_name}'"
 
     eval "gcloud infra-manager ${args}"
 
