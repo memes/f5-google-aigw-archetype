@@ -74,32 +74,7 @@ module "bootstrap" {
     "roles/logging.logWriter",
   ]
   # spell-checker: enable
-  impersonators  = var.impersonators
-  collaborators  = var.collaborators
-  github_options = var.github_options
-}
-
-module "cloud_deploy" {
-  # TODO @memes - pin once upstream is ready for Next 2025
-  # tflint-ignore: terraform_module_pinned_source
-  source         = "git::https://github.com/memes/terraform-google-f5-demo-bootstrap//modules/cloud-deploy?ref=feat%2fcloud_deploy_infra_manager"
-  project_id     = var.project_id
-  name           = var.name
-  labels         = var.labels
-  bootstrap_apis = []
-}
-
-resource "local_sensitive_file" "sops" {
-  filename             = abspath(format("../%s/.sops.yaml", path.module))
-  directory_permission = "0755"
-  file_permission      = "0644"
-  content              = <<-EOC
-  creation_rules:
-    - path_regex: secrets\.yaml$
-      gcp_kms: '${module.bootstrap.sops_kms_id}'
-  EOC
-
-  depends_on = [
-    module.bootstrap,
-  ]
+  iac_impersonators = var.iac_impersonators
+  collaborators     = var.collaborators
+  github_options    = var.github_options
 }

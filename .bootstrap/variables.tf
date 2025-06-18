@@ -10,7 +10,7 @@ variable "project_id" {
   type = string
 }
 
-variable "impersonators" {
+variable "iac_impersonators" {
   type    = list(string)
   default = []
 }
