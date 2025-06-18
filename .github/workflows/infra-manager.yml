@@ -67,7 +67,7 @@ jobs:
           EOF
       - name: Generate preview plan
         if: ${{ success() && github.event_name == 'pull_request' }}
-        run: ./scripts/infra-manager-wrapper.sh plan
+        run: ./.github/workflows/infra-manager-wrapper.sh plan
       - name: Generate markdown summary of plan
         if: ${{ success() && github.event_name == 'pull_request' }}
         run: |
@@ -89,4 +89,4 @@ jobs:
             })
       - name: Apply changes
         if: ${{ success() && github.event_name == 'push' }}
-        run: ./scripts/infra-manager-wrapper.sh apply
+        run: ./.github/workflows/infra-manager-wrapper.sh apply
