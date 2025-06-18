@@ -109,8 +109,8 @@ module "autopilot" {
 }
 
 resource "google_project_iam_member" "deploy_gke" {
-  for_each = { for sa in compact([var.cloud_deploy_service_account]) : member => format("serviceAccount:%s", sa) }
+  for_each = { for sa in compact([var.cloud_deploy_service_account]) : sa => true }
   project  = var.project_id
   role     = "roles/container.developer"
-  member   = each.value
+  member   = format("serviceAccount:%s", each.key)
 }
