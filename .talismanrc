@@ -8,3 +8,5 @@ fileignoreconfig:
   checksum: 4523de56b232fbc288580cfbbf36bae18a09d3ca8bfc36df1e321def3d76c5ae
 - filename: .bootstrap/variables.tf
   checksum: bd5ffdff6f6f0531b81c5c70b06089aea24bc1d1a8ed931c2d0434f3bee5d762
+- filename: .github/workflows/container-stager.yml
+  checksum: be636d3acdcd6e2c696ea4ff68327eda8944f82437d168d6db4d322ba4c841a8
