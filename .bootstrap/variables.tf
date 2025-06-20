@@ -35,3 +35,13 @@ variable "github_options" {
     template     = ""
   }
 }
+
+variable "nginx_jwt" {
+  type        = string
+  nullable    = true
+  default     = null
+  description = <<-EOD
+  If not null or empty a Secret Manager secret containing the value of this string will be created, with access granted
+  to Artifact Registry service account.
+  EOD
+}
