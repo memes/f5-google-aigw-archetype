@@ -3,9 +3,10 @@
     "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
     "features": {
         "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
         "ghcr.io/memes/devcontainers-features/direnv:1": {},
         "ghcr.io/memes/devcontainers-features/google-cloud-cli:1": {
-            "components": "kubectl gke-gcloud-auth-plugin skaffold kpt kustomize minikube",
+            "components": "gke-gcloud-auth-plugin skaffold kpt kustomize",
             "installFromTarball": true
         },
         "ghcr.io/memes/devcontainers-features/hashicorp:1": {
