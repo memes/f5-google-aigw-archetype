@@ -77,4 +77,5 @@ module "bootstrap" {
   iac_impersonators = var.iac_impersonators
   collaborators     = var.collaborators
   github_options    = var.github_options
+  nginx_jwt         = var.nginx_jwt
 }
