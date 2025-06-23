@@ -8,6 +8,10 @@ terraform {
   }
 }
 
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 data "google_compute_zones" "zones" {
   project = var.project_id
   region  = var.region
@@ -113,4 +117,12 @@ resource "google_project_iam_member" "deploy_gke" {
   project  = var.project_id
   role     = "roles/container.developer"
   member   = format("serviceAccount:%s", each.key)
+}
+
+resource "google_secret_manager_secret_iam_member" "nginx" {
+  for_each  = coalesce(var.nginx_jwt_secret_id, "unspecified") == "unspecified" ? {} : { jwt = var.nginx_jwt_secret_id }
+  project   = var.project_id
+  secret_id = each.value
+  role      = "roles/secretmanager.secretAccessor"
+  member    = format("principal://iam.googleapis.com/projects/%s/locations/global/workloadIdentityPools/%s.svc.id.goog/subject/ns/nginx-ingress/sa/nginx-ingress", data.google_project.project.number, var.project_id)
 }

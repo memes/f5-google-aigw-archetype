@@ -58,6 +58,7 @@ jobs:
           region                       = "${{ env.DEPLOYMENT_REGION }}"
           repository                   = "${{ vars.OCI_REGISTRY }}"
           cloud_deploy_service_account = "${{ secrets.DEPLOY_SERVICE_ACCOUNT }}"
+          nginx_jwt_secret_id          = "${{ vars.NGINX_JWT_SECRET }}"
           labels                       = {
             owner   = "emes"
             email   = "m_dot_emes_at_f5_dot_com"
