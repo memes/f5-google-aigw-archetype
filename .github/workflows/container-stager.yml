@@ -54,5 +54,5 @@ jobs:
           gcrane cp sorinboiaf5/arcadia-users:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-users:v1
           gcrane cp sorinboiaf5/arcadia-ai:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-ai:v1
           gcrane cp sorinboiaf5/arcadia-ai-rag:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-ai-rag:v1
-          gcrane cp private-registry.nginx.com/nginx-ic/nginx-plus-ingress:4.0.1 ${{ vars.OCI_REGISTRY }}/nginx-ic/nginx-plus-ingress:4.0.1
+          gcrane cp private-registry.nginx.com/nginx-ic/nginx-plus-ingress:5.0.0 ${{ vars.OCI_REGISTRY }}/nginx-ic/nginx-plus-ingress:5.0.0
           gcrane cp oci.external-secrets.io/external-secrets/external-secrets:v0.18.0 ${{ vars.OCI_REGISTRY }}/external-secrets/external-secrets:v0.18.0
