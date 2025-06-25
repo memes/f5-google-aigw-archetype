@@ -126,3 +126,10 @@ resource "google_secret_manager_secret_iam_member" "nginx" {
   role      = "roles/secretmanager.secretAccessor"
   member    = format("principal://iam.googleapis.com/projects/%s/locations/global/workloadIdentityPools/%s.svc.id.goog/subject/ns/nginx-ingress/sa/nginx-ingress", data.google_project.project.number, var.project_id)
 }
+
+resource "google_project_iam_member" "otel" {
+  for_each = { for role in ["roles/logging.logWriter", "roles/monitoring.metricWriter", "roles/cloudtrace.agent"] : role => true }
+  project  = var.project_id
+  role     = each.key
+  member   = format("principal://iam.googleapis.com/projects/%s/locations/global/workloadIdentityPools/%s.svc.id.goog/subject/ns/opentelemetry/sa/opentelemetry-collector", data.google_project.project.number, var.project_id)
+}
