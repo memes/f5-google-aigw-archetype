@@ -80,14 +80,14 @@ jobs:
       - name: Generate preview plan
         if: ${{ success() && (inputs.action || 'apply') == 'apply' }}
         run: ./.github/workflows/infra-manager-wrapper.sh plan
-      - name: Generate markdown summary of plan
-        if: ${{ success() && (inputs.action || 'apply') == 'apply' }}
+      - name: Generate markdown summary of plan for PR
+        if: ${{ success() && (inputs.action || 'apply') == 'apply' && github.event.number }}
         run: |
           curl -fsSLO https://github.com/Azure/tfplandoc/releases/download/v${{ env.TFPLANDOC_VERSION }}/tfplandoc_${{ env.TFPLANDOC_VERSION }}_linux_amd64.zip
           unzip tfplandoc_${{ env.TFPLANDOC_VERSION }}_linux_amd64.zip tfplandoc_v${{ env.TFPLANDOC_VERSION }}
           ./tfplandoc_v${{ env.TFPLANDOC_VERSION }} generate "${{ github.sha }}.json" > "${{ github.sha }}.md"
-      - name: Add markdown output as comment
-        if: ${{ success() && (inputs.action || 'apply') == 'apply' }}
+      - name: Add markdown output as comment in PR
+        if: ${{ success() && (inputs.action || 'apply') == 'apply' && github.event.number }}
         uses: actions/github-script@v7
         with:
           script: |
