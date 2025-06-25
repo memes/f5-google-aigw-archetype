@@ -6,3 +6,11 @@ fileignoreconfig:
   checksum: 2f71599b845423d9000256e43f589ca9cc9d0c644078fed49512bd1907f1f7c1
 - filename: scripts/infra-manager-wrapper.sh
   checksum: 4523de56b232fbc288580cfbbf36bae18a09d3ca8bfc36df1e321def3d76c5ae
+- filename: .bootstrap/variables.tf
+  checksum: bd5ffdff6f6f0531b81c5c70b06089aea24bc1d1a8ed931c2d0434f3bee5d762
+- filename: .github/workflows/container-stager.yml
+  checksum: 529e2e7de8ef6b8a87399534cb8096bfd249b4371c0afdb2142c5cd0f0874ef4
+- filename: .github/workflows/infra-manager.yml
+  checksum: bf17fd1365196ad5b0e908557a68dd94b49e622fa6b6b816f05f3ec0b1455f17
+- filename: foundations/main.tf
+  checksum: 63cfef5f8c10499117c1342c94335c71164de73efe0316dacb9a3df0353b124b

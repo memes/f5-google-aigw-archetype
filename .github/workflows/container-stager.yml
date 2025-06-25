@@ -1,5 +1,4 @@
 # Copies publicly accessible containers from Docker Hub and GHCR to the private Artifact Registry.
-# NOTE: Images from private-registry.nginx.com have to be copied manually to avoid JWT token leakage.
 # yamllint disable rule:line-length
 # spell-checker: disable
 ---
@@ -35,11 +34,25 @@ jobs:
           service_account: ${{ secrets.AR_SERVICE_ACCOUNT }}
           token_format: access_token
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
+      - uses: google-github-actions/setup-gcloud@v2
       - id: gcrane_auth
         name: Authenticate to GHCR and private repos
         run: |
           gcrane auth login ghcr.io --username "${{ github.actor }}" --password "${{ github.token }}"
+          gcrane auth login private-registry.nginx.com --username "$(gcloud secrets versions access ${{ vars.NGINX_JWT_SECRET }}/versions/latest)" --password none
           gcrane auth login "$(echo "${{ vars.OCI_REGISTRY }}" | cut -d/ -f1)" --username oauth2accesstoken --password "${{ steps.auth.outputs.access_token }}"
       - name: Copy containers to private repo
         run: |
           gcrane cp ghcr.io/memes/terraform-google-private-bastion/forward-proxy:4.0.0 ${{ vars.OCI_REGISTRY }}/memes/terraform-google-private-bastion/forward-proxy:4.0.0
+          gcrane cp mongo:8.0.6-noble ${{ vars.OCI_REGISTRY }}/mongo:8.0.6-noble
+          gcrane cp ollama/ollama:0.6.4 ${{ vars.OCI_REGISTRY }}/ollama/ollama:0.6.4
+          gcrane cp nginx/nginx-ingress:5.0.0 ${{ vars.OCI_REGISTRY }}/nginx/nginx-ingress:5.0.0
+          gcrane cp sorinboiaf5/arcadia-frontend:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-frontend:v1
+          gcrane cp sorinboiaf5/arcadia-login:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-login:v1
+          gcrane cp sorinboiaf5/arcadia-stock_transaction:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-stock_transaction:v1
+          gcrane cp sorinboiaf5/arcadia-stocks:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-stocks:v1
+          gcrane cp sorinboiaf5/arcadia-users:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-users:v1
+          gcrane cp sorinboiaf5/arcadia-ai:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-ai:v1
+          gcrane cp sorinboiaf5/arcadia-ai-rag:v1 ${{ vars.OCI_REGISTRY }}/sorinboiaf5/arcadia-ai-rag:v1
+          gcrane cp private-registry.nginx.com/nginx-ic/nginx-plus-ingress:5.0.0 ${{ vars.OCI_REGISTRY }}/nginx-ic/nginx-plus-ingress:5.0.0
+          gcrane cp oci.external-secrets.io/external-secrets/external-secrets:v0.18.0 ${{ vars.OCI_REGISTRY }}/external-secrets/external-secrets:v0.18.0

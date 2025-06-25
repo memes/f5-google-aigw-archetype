@@ -78,3 +78,9 @@ variable "cloud_deploy_service_account" {
   Optional Cloud Deploy execution service account that will deploy resources to GKE.
   EOD
 }
+
+variable "nginx_jwt_secret_id" {
+  type     = string
+  nullable = true
+  default  = null
+}
