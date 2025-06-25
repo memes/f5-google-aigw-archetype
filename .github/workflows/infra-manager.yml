@@ -97,11 +97,22 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: plan
+              body: '## Proposed Changes\n\nInfrastructure Manager will make the following changes\n\n' + plan
             })
       - name: Apply changes
         if: ${{ success() && (inputs.action || 'apply') == 'apply' }}
         run: ./.github/workflows/infra-manager-wrapper.sh apply
+      - name: Add applied comment to PR
+        if: ${{ success() && (inputs.action || 'apply') == 'apply' && github.event.number }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## Changes applied\n\nThe proposed changes have been successfully applied by Infrastructure Manager'
+            })
       - name: Delete deployment
         if: ${{ success() && (inputs.action || 'apply') == 'delete' }}
         run: ./.github/workflows/infra-manager-wrapper.sh delete
