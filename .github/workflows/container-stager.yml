@@ -23,7 +23,7 @@ jobs:
     env:
       GCRANE_VERSION: 0.20.5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install gcrane
         run: |
           sudo sh -c 'curl -fsSL https://github.com/google/go-containerregistry/releases/download/v${{ env.GCRANE_VERSION }}/go-containerregistry_linux_x86_64.tar.gz | tar xzf - -C /usr/local/bin crane gcrane'

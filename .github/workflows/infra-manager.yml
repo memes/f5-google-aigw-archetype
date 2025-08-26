@@ -39,7 +39,7 @@ jobs:
       DEPLOYMENT_GIT_SOURCE_DIRECTORY: foundations
       DEPLOYMENT_INPUTS_FILE: "${{ github.sha }}.tfvars"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: google-github-actions/auth@v2
         with:
           project_id: ${{ vars.PROJECT_ID }}
